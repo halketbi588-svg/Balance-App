@@ -1,0 +1,2492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Balance — Student Life & Study Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-outer: linear-gradient(135deg, #efe8fa 0%, #f9eef2 50%, #f5efe6 100%);
+      --bg-app: #faf7f2;
+      --surface: #ffffff;
+      --surface-soft: #f5f1ea;
+      --text-main: #2c253d;
+      --text-muted: #766e89;
+      --text-light: #a29ab3;
+
+      /* Pastel Category Tokens */
+      --acad-bg: #efe9fc;
+      --acad-accent: #8b6ce8;
+      --acad-dark: #583bc2;
+
+      --soc-bg: #fce8ef;
+      --soc-accent: #e87a9e;
+      --soc-dark: #b6436a;
+
+      --pers-bg: #f6ede2;
+      --pers-accent: #c89666;
+      --pers-dark: #885d35;
+
+      --sage-bg: #e7f4ed;
+      --sage-text: #45946d;
+
+      --lavender-ring: rgba(139, 108, 232, 0.14);
+      --shadow-card: 0 6px 22px rgba(95, 72, 145, 0.06);
+      --shadow-float: 0 10px 26px rgba(139, 108, 232, 0.28);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-outer);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+    }
+
+    /* Mobile Frame on Desktop, Fluid on Mobile */
+    .phone-shell {
+      width: 100%;
+      max-width: 414px;
+      height: 856px;
+      max-height: 94vh;
+      background: var(--bg-app);
+      border-radius: 40px;
+      box-shadow: 0 28px 70px rgba(72, 52, 114, 0.16), 0 0 0 8px rgba(255, 255, 255, 0.65);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 0;
+        background: var(--bg-app);
+      }
+      .phone-shell {
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Status / Top Branding Strip */
+    .top-bar {
+      padding: 16px 22px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-app);
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .brand-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #a78bfa 0%, #f48fb1 100%);
+      display: grid;
+      place-items: center;
+      color: #fff;
+    }
+
+    .date-chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(95, 72, 145, 0.05);
+    }
+
+    /* Main Scrollable Content */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 20px 100px;
+      scroll-behavior: smooth;
+    }
+
+    .app-content::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Typography & Cards */
+    .greeting-wrap {
+      margin: 6px 0 18px;
+    }
+
+    .greeting-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 4px;
+      line-height: 1.2;
+    }
+
+    .greeting-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 16px;
+      border: 1px solid rgba(139, 108, 232, 0.08);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px 2px 10px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .section-link {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--acad-dark);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+
+    /* Balance Hero Card */
+    .balance-hero {
+      background: linear-gradient(135deg, #f4effd 0%, #fdf0f5 55%, #f9f2e9 100%);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .balance-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .donut-wrap {
+      position: relative;
+      width: 92px;
+      height: 92px;
+      flex-shrink: 0;
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .donut-center span {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .balance-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+    }
+
+    .legend-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .legend-val {
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .balance-note {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(139, 108, 232, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Quick Stat Row */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 13px 10px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .stat-pill .num {
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .stat-pill .lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Quick Add Chips */
+    .quick-add-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+    .quick-add-row::-webkit-scrollbar { display: none; }
+
+    .quick-chip {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: transform 0.15s ease;
+    }
+    .quick-chip:active { transform: scale(0.96); }
+    .chip-acad { background: var(--acad-bg); color: var(--acad-dark); }
+    .chip-soc { background: var(--soc-bg); color: var(--soc-dark); }
+    .chip-pers { background: var(--pers-bg); color: var(--pers-dark); }
+
+    /* Activity / Task Cards */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .activity-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 13px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(95, 72, 145, 0.045);
+      border-left: 4px solid var(--acad-accent);
+      transition: opacity 0.2s ease, transform 0.15s ease;
+      cursor: pointer;
+    }
+
+    .activity-card[data-type="Academic"] { border-left-color: var(--acad-accent); }
+    .activity-card[data-type="Social"] { border-left-color: var(--soc-accent); }
+    .activity-card[data-type="Personal"] { border-left-color: var(--pers-accent); }
+
+    .activity-card.completed {
+      opacity: 0.64;
+    }
+
+    .activity-card.completed .act-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .check-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border: 2px solid #d5cde6;
+      background: #fff;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      padding: 0;
+    }
+
+    .activity-card[data-type="Social"] .check-btn { border-color: #efc0d0; }
+    .activity-card[data-type="Personal"] .check-btn { border-color: #e4ceb6; }
+
+    .activity-card.completed .check-btn {
+      background: var(--sage-text);
+      border-color: var(--sage-text);
+      color: #fff;
+    }
+
+    .act-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .act-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .act-title {
+      font-size: 0.93rem;
+      font-weight: 700;
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+
+    .act-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.69rem;
+      font-weight: 700;
+    }
+    .badge-Academic { background: var(--acad-bg); color: var(--acad-dark); }
+    .badge-Social { background: var(--soc-bg); color: var(--soc-dark); }
+    .badge-Personal { background: var(--pers-bg); color: var(--pers-dark); }
+
+    .prio-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--surface-soft);
+      color: var(--text-muted);
+    }
+    .prio-High { background: #fdecef; color: #b84b6b; }
+    .prio-Medium { background: #f3effc; color: #6c4fd1; }
+
+    .act-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .mini-icon-btn {
+      border: none;
+      background: var(--surface-soft);
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Planner Controls */
+    .planner-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .seg-control {
+      display: inline-flex;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(95, 72, 145, 0.05);
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--acad-bg);
+      color: var(--acad-dark);
+    }
+
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .circle-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface);
+      color: var(--text-main);
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 2px 8px rgba(95, 72, 145, 0.07);
+    }
+
+    /* Day Strip */
+    .day-strip {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .day-pill {
+      background: var(--surface);
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      padding: 8px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .day-pill .d-name {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: block;
+    }
+
+    .day-pill .d-num {
+      font-size: 0.92rem;
+      font-weight: 800;
+      display: block;
+      margin: 2px 0;
+    }
+
+    .day-pill .d-dots {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      min-height: 6px;
+    }
+
+    .day-pill .d-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .day-pill.today {
+      border-color: rgba(139, 108, 232, 0.35);
+    }
+
+    .day-pill.selected {
+      background: linear-gradient(160deg, #8b6ce8 0%, #a58cf0 100%);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(139, 108, 232, 0.28);
+    }
+
+    .day-pill.selected .d-name {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      padding-bottom: 2px;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      border: 1px solid rgba(139, 108, 232, 0.16);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-pill.active {
+      background: var(--text-main);
+      color: #fff;
+      border-color: var(--text-main);
+    }
+
+    /* Week Overview Grid */
+    .week-day-group {
+      margin-bottom: 14px;
+    }
+
+    .week-day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+
+    .free-time-banner {
+      background: var(--sage-bg);
+      color: var(--sage-text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1.5px solid #ebe4f5;
+      background: var(--surface);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.16s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--acad-accent);
+    }
+
+    .type-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .type-option {
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      padding: 11px 8px;
+      text-align: center;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .type-option[data-val="Academic"] { background: var(--acad-bg); color: var(--acad-dark); }
+    .type-option[data-val="Social"] { background: var(--soc-bg); color: var(--soc-dark); }
+    .type-option[data-val="Personal"] { background: var(--pers-bg); color: var(--pers-dark); }
+
+    .type-option.selected {
+      border-color: currentColor;
+      box-shadow: 0 4px 12px rgba(95, 72, 145, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .prio-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .prio-opt {
+      padding: 9px;
+      border-radius: 12px;
+      border: 1.5px solid #ebe4f5;
+      background: var(--surface);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .prio-opt.selected {
+      border-color: var(--acad-accent);
+      background: var(--acad-bg);
+      color: var(--acad-dark);
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      display: inline-block;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #dfd8ec;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    }
+
+    .switch input:checked + .slider {
+      background: var(--acad-accent);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      background: linear-gradient(135deg, #8b6ce8 0%, #a58cf0 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(139, 108, 232, 0.28);
+      transition: transform 0.15s ease;
+    }
+
+    .primary-btn:active {
+      transform: scale(0.98);
+    }
+
+    .secondary-btn {
+      width: 100%;
+      border: 1.5px solid #e7dff3;
+      border-radius: 14px;
+      padding: 11px;
+      background: var(--surface);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .danger-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fdecef;
+      color: #b84b6b;
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Insights Bars & Cards */
+    .progress-row {
+      margin-bottom: 14px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.83rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .bar-track {
+      height: 11px;
+      background: var(--surface-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .weekly-bars {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      align-items: end;
+      height: 120px;
+      padding-top: 16px;
+    }
+
+    .w-bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .w-bar-stack {
+      width: 18px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column-reverse;
+      background: var(--surface-soft);
+      min-height: 6px;
+    }
+
+    .w-bar-lbl {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .insight-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .insight-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .insight-text {
+      flex: 1;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+
+    .insight-action {
+      margin-top: 8px;
+      border: none;
+      background: var(--acad-bg);
+      color: var(--acad-dark);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Profile */
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #d7c7fb 0%, #fbd0df 100%);
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .range-wrap {
+      margin-bottom: 12px;
+    }
+    .range-wrap input[type="range"] {
+      width: 100%;
+      accent-color: var(--acad-accent);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 76px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(139, 108, 232, 0.1);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 0 8px 6px;
+      z-index: 20;
+    }
+
+    .nav-item {
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-light);
+      font-family: inherit;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px 0;
+      transition: color 0.16s ease;
+    }
+
+    .nav-item.active {
+      color: var(--acad-dark);
+    }
+
+    .nav-add-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      border: none;
+      background: linear-gradient(135deg, #8b6ce8 0%, #e87a9e 100%);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      margin: -18px auto 0;
+      box-shadow: var(--shadow-float);
+      cursor: pointer;
+      transition: transform 0.16s ease;
+    }
+
+    .nav-add-btn:active {
+      transform: scale(0.93);
+    }
+
+    /* Modal Sheet for Edit / Reschedule */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(44, 37, 61, 0.35);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: flex-end;
+      z-index: 40;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-height: 86%;
+      background: var(--bg-app);
+      border-radius: 28px 28px 0 0;
+      padding: 18px 20px 26px;
+      overflow-y: auto;
+      animation: slideUp 0.22s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 99px;
+      background: #d8d0e5;
+      margin: 0 auto 14px;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      bottom: 88px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text-main);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 50;
+      white-space: nowrap;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 8px 20px rgba(44, 37, 61, 0.22);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-muted);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-shell">
+    <!-- Top Header -->
+    <header class="top-bar">
+      <div class="brand-pill">
+        <div class="brand-dot">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>
+        </div>
+        Balance
+      </div>
+      <div class="date-chip" id="todayDateChip">Today</div>
+    </header>
+
+    <!-- Scrollable Screen Area -->
+    <main class="app-content" id="appContent">
+
+      <!-- 1. HOME SCREEN -->
+      <section class="screen active" id="screen-home">
+        <div class="greeting-wrap">
+          <h1 class="greeting-title" id="greetingTitle">Good morning!</h1>
+          <p class="greeting-sub" id="greetingSub">One step at a time — your week has room to breathe.</p>
+        </div>
+
+        <!-- Visual Balance Indicator -->
+        <div class="card balance-hero">
+          <div class="balance-top">
+            <div class="donut-wrap">
+              <svg width="92" height="92" viewBox="0 0 92 92" id="homeDonutSvg"></svg>
+              <div class="donut-center">
+                <strong id="homeTotalHours">0h</strong>
+                <span>this week</span>
+              </div>
+            </div>
+            <div class="balance-legend" id="homeLegend"></div>
+          </div>
+          <div class="balance-note">
+            <span id="homeBalanceMsg">Balanced routine looking steady.</span>
+            <button class="section-link" onclick="switchTab('insights')">See insights →</button>
+          </div>
+        </div>
+
+        <!-- Today Stats -->
+        <div class="stats-grid">
+          <div class="stat-pill">
+            <span class="num" id="statStudyHours" style="color: var(--acad-dark);">0h</span>
+            <span class="lbl">Today's Study</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num" id="statTasksLeft" style="color: var(--soc-dark);">0</span>
+            <span class="lbl">Academic Tasks</span>
+          </div>
+          <div class="stat-pill">
+            <span class="num" id="statPersonalTime" style="color: var(--pers-dark);">0h</span>
+            <span class="lbl">Social & Rest</span>
+          </div>
+        </div>
+
+        <!-- Quick Add -->
+        <div class="quick-add-row">
+          <button class="quick-chip chip-acad" onclick="openQuickAdd('Academic')">+ Study / Task</button>
+          <button class="quick-chip chip-soc" onclick="openQuickAdd('Social')">+ Friends / Social</button>
+          <button class="quick-chip chip-pers" onclick="openQuickAdd('Personal')">+ Rest / Self-care</button>
+        </div>
+
+        <!-- Today's Academic Tasks -->
+        <div class="section-header">
+          <h2 class="section-title">Today's Academic Focus</h2>
+          <button class="section-link" onclick="switchTab('plan')">My Plan</button>
+        </div>
+        <div class="task-list" id="homeTodayAcademic"></div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="section-header">
+          <h2 class="section-title">Upcoming Deadlines & Exams</h2>
+        </div>
+        <div class="task-list" id="homeDeadlines"></div>
+
+        <!-- Upcoming Social & Personal -->
+        <div class="section-header">
+          <h2 class="section-title">Time for Friends & You</h2>
+        </div>
+        <div class="task-list" id="homeSocialPersonal"></div>
+      </section>
+
+      <!-- 2. MY PLAN – WEEKLY PLANNER -->
+      <section class="screen" id="screen-plan">
+        <div class="greeting-wrap" style="margin-bottom: 12px;">
+          <h1 class="greeting-title" style="font-size: 1.35rem;">My Plan</h1>
+          <p class="greeting-sub">Flexible scheduling — tap any item to edit or move days.</p>
+        </div>
+
+        <div class="planner-controls">
+          <div class="seg-control">
+            <button class="seg-btn active" id="viewDayBtn" onclick="setPlanView('day')">Day</button>
+            <button class="seg-btn" id="viewWeekBtn" onclick="setPlanView('week')">Week</button>
+          </div>
+          <div class="week-nav">
+            <button class="circle-btn" onclick="shiftWeek(-1)" aria-label="Previous week">‹</button>
+            <span id="weekRangeLabel">This Week</span>
+            <button class="circle-btn" onclick="shiftWeek(1)" aria-label="Next week">›</button>
+          </div>
+        </div>
+
+        <div class="day-strip" id="plannerDayStrip"></div>
+
+        <div class="filter-row" id="plannerFilters">
+          <button class="filter-pill active" onclick="setPlanFilter('All')">All</button>
+          <button class="filter-pill" onclick="setPlanFilter('Academic')">Academic</button>
+          <button class="filter-pill" onclick="setPlanFilter('Social')">Social</button>
+          <button class="filter-pill" onclick="setPlanFilter('Personal')">Personal</button>
+          <button class="filter-pill" onclick="setPlanFilter('Priority')">High Priority</button>
+        </div>
+
+        <div id="plannerListContainer"></div>
+      </section>
+
+      <!-- 3. ADD ACTIVITY -->
+      <section class="screen" id="screen-add">
+        <div class="greeting-wrap" style="margin-bottom: 12px;">
+          <h1 class="greeting-title" style="font-size: 1.35rem;">Add Activity</h1>
+          <p class="greeting-sub">Plan realistically — leave room for rest and life.</p>
+        </div>
+
+        <form class="card" id="addActivityForm" onsubmit="handleAddSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="addName">Activity name</label>
+            <input class="form-input" id="addName" type="text" placeholder="e.g., Study for Statistics quiz" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Activity type</label>
+            <div class="type-selector" id="addTypeSelector">
+              <button type="button" class="type-option selected" data-val="Academic" onclick="selectAddType('Academic')">Academic</button>
+              <button type="button" class="type-option" data-val="Social" onclick="selectAddType('Social')">Social</button>
+              <button type="button" class="type-option" data-val="Personal" onclick="selectAddType('Personal')">Personal</button>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label" for="addCategory">Category</label>
+              <select class="form-select" id="addCategory"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="addDate">Date</label>
+              <input class="form-input" id="addDate" type="date" required />
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label" for="addStart">Start time</label>
+              <input class="form-input" id="addStart" type="time" value="14:00" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="addEnd">End time</label>
+              <input class="form-input" id="addEnd" type="time" value="15:30" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <div class="prio-selector" id="addPrioSelector">
+              <button type="button" class="prio-opt" data-val="Low" onclick="selectAddPrio('Low')">Low</button>
+              <button type="button" class="prio-opt selected" data-val="Medium" onclick="selectAddPrio('Medium')">Medium</button>
+              <button type="button" class="prio-opt" data-val="High" onclick="selectAddPrio('High')">High</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="addNotes">Optional notes</label>
+            <textarea class="form-textarea" id="addNotes" rows="2" placeholder="Break into small steps, location, or who you're meeting..."></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <div>
+              <strong style="font-size: 0.86rem;">Set a gentle reminder</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);" id="reminderPreview">30 minutes before</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="addReminder" checked onchange="document.getElementById('reminderTimingWrap').style.display = this.checked ? 'block' : 'none'">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group" id="reminderTimingWrap">
+            <select class="form-select" id="addReminderTime" onchange="document.getElementById('reminderPreview').textContent = this.value">
+              <option value="15 minutes before">15 minutes before</option>
+              <option value="30 minutes before" selected>30 minutes before</option>
+              <option value="1 hour before">1 hour before</option>
+              <option value="1 day before">1 day before (great for deadlines)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="primary-btn" style="margin-top: 6px;">Save to My Plan</button>
+        </form>
+      </section>
+
+      <!-- 4. INSIGHTS & BALANCE OVERVIEW -->
+      <section class="screen" id="screen-insights">
+        <div class="greeting-wrap" style="margin-bottom: 12px;">
+          <h1 class="greeting-title" style="font-size: 1.35rem;">Weekly Balance</h1>
+          <p class="greeting-sub">A gentle look at your time — no guilt, just clarity.</p>
+        </div>
+
+        <!-- Balance Breakdown Card -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <strong style="font-size: 0.96rem;">This Week's Time Mix</strong>
+            <span class="badge badge-Academic" id="insightTotalLabel">0 hrs total</span>
+          </div>
+
+          <div class="progress-row">
+            <div class="progress-head">
+              <span>Study & Academic</span>
+              <span id="insAcadHrs">0h / 18h goal</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="insAcadBar" style="width: 0%; background: var(--acad-accent);"></div>
+            </div>
+          </div>
+
+          <div class="progress-row">
+            <div class="progress-head">
+              <span>Social Life</span>
+              <span id="insSocHrs">0h / 6h goal</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="insSocBar" style="width: 0%; background: var(--soc-accent);"></div>
+            </div>
+          </div>
+
+          <div class="progress-row" style="margin-bottom: 4px;">
+            <div class="progress-head">
+              <span>Personal & Relaxation</span>
+              <span id="insPersHrs">0h / 8h goal</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="insPersBar" style="width: 0%; background: var(--pers-accent);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7-Day Visual Chart -->
+        <div class="card">
+          <strong style="font-size: 0.94rem;">Daily Rhythm (Mon–Sun)</strong>
+          <div class="weekly-bars" id="weeklyBarsChart"></div>
+        </div>
+
+        <!-- Supportive Insights & Suggestions -->
+        <div class="section-header">
+          <h2 class="section-title">Supportive Suggestions</h2>
+        </div>
+        <div id="insightsList"></div>
+
+        <!-- Priority Check -->
+        <div class="section-header">
+          <h2 class="section-title">Priority Check</h2>
+        </div>
+        <div class="task-list" id="insightsPriorityList"></div>
+      </section>
+
+      <!-- 5. PROFILE & SETTINGS -->
+      <section class="screen" id="screen-profile">
+        <div class="card profile-hero">
+          <div class="avatar" id="profileAvatar">M</div>
+          <div style="flex: 1;">
+            <h2 style="margin: 0 0 2px; font-size: 1.12rem;" id="profileDisplayName">Maya Lin</h2>
+            <p style="margin: 0; font-size: 0.82rem; color: var(--text-muted);" id="profileMajor">Psychology & Data Science · Year 2</p>
+          </div>
+        </div>
+
+        <!-- Wins Counter -->
+        <div class="card" style="background: linear-gradient(135deg, #f3eefc 0%, #e7f4ed 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 0.95rem;">Your Gentle Wins</strong>
+              <p style="margin: 4px 0 0; font-size: 0.8rem; color: var(--text-muted);">Every completed task counts — unfinished ones can simply move.</p>
+            </div>
+            <div style="text-align: center; background: #fff; padding: 10px 14px; border-radius: 16px;">
+              <strong style="font-size: 1.25rem; color: var(--sage-text);" id="winsCount">0</strong>
+              <div style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted);">Done</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Realistic Goals -->
+        <div class="card">
+          <strong style="font-size: 0.95rem; display: block; margin-bottom: 12px;">Weekly Balance Targets</strong>
+          <div class="form-group">
+            <label class="form-label" for="profNameInput">Your name</label>
+            <input class="form-input" id="profNameInput" type="text" onchange="updateProfileField('name', this.value)" />
+          </div>
+          <div class="range-wrap">
+            <div class="progress-head"><span>Study Goal</span><span id="goalAcadVal">18h/wk</span></div>
+            <input type="range" min="6" max="35" id="goalAcadRange" oninput="updateGoal('Academic', this.value)" />
+          </div>
+          <div class="range-wrap">
+            <div class="progress-head"><span>Social Goal</span><span id="goalSocVal">6h/wk</span></div>
+            <input type="range" min="2" max="15" id="goalSocRange" oninput="updateGoal('Social', this.value)" />
+          </div>
+          <div class="range-wrap" style="margin-bottom: 0;">
+            <div class="progress-head"><span>Personal & Rest Goal</span><span id="goalPersVal">8h/wk</span></div>
+            <input type="range" min="3" max="20" id="goalPersRange" oninput="updateGoal('Personal', this.value)" />
+          </div>
+        </div>
+
+        <!-- Reminder Settings -->
+        <div class="card">
+          <strong style="font-size: 0.95rem; display: block; margin-bottom: 6px;">Gentle Notifications</strong>
+          <div class="toggle-row">
+            <div>
+              <div style="font-size: 0.86rem; font-weight: 600;">Deadline reminders</div>
+              <div style="font-size: 0.74rem; color: var(--text-muted);">Calm heads-up before assignments are due</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notifDeadlines" checked onchange="toggleSetting('notifDeadlines', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div style="font-size: 0.86rem; font-weight: 600;">Break & rest nudges</div>
+              <div style="font-size: 0.74rem; color: var(--text-muted);">Suggests pauses on heavy study days</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notifBreaks" checked onchange="toggleSetting('notifBreaks', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-row" style="padding-bottom: 0;">
+            <div>
+              <div style="font-size: 0.86rem; font-weight: 600;">No-guilt rollover</div>
+              <div style="font-size: 0.74rem; color: var(--text-muted);">Keep unfinished tasks friendly, never overdue red</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notifNoGuilt" checked onchange="toggleSetting('notifNoGuilt', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <button class="secondary-btn" onclick="resetDemoData()" style="margin-bottom: 12px;">Reset Sample Data</button>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+        Home
+      </button>
+      <button class="nav-item" data-tab="plan" onclick="switchTab('plan')">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        My Plan
+      </button>
+      <button class="nav-add-btn" onclick="switchTab('add')" aria-label="Add Activity">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="nav-item" data-tab="insights" onclick="switchTab('insights')">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Insights
+      </button>
+      <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5"/></svg>
+        Profile
+      </button>
+    </nav>
+
+    <!-- Edit / Reschedule Bottom Sheet -->
+    <div class="modal-backdrop" id="editModal" onclick="if(event.target===this) closeEditModal()">
+      <div class="modal-sheet">
+        <div class="sheet-handle"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="margin: 0; font-size: 1.1rem;">Edit or Reschedule</h3>
+          <button class="mini-icon-btn" onclick="closeEditModal()">Close</button>
+        </div>
+
+        <!-- Quick Reschedule Pills -->
+        <div style="margin-bottom: 14px;">
+          <div class="form-label">Quick move to another day</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="quickMoveBtns"></div>
+        </div>
+
+        <form id="editActivityForm" onsubmit="handleEditSubmit(event)">
+          <input type="hidden" id="editId" />
+          <div class="form-group">
+            <label class="form-label" for="editName">Activity name</label>
+            <input class="form-input" id="editName" type="text" required />
+          </div>
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label" for="editType">Type</label>
+              <select class="form-select" id="editType">
+                <option value="Academic">Academic</option>
+                <option value="Social">Social</option>
+                <option value="Personal">Personal</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="editDate">Date</label>
+              <input class="form-input" id="editDate" type="date" required />
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label" for="editStart">Start</label>
+              <input class="form-input" id="editStart" type="time" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="editEnd">End</label>
+              <input class="form-input" id="editEnd" type="time" required />
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label" for="editPriority">Priority</label>
+              <select class="form-select" id="editPriority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="editCategory">Category</label>
+              <input class="form-input" id="editCategory" type="text" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editNotes">Notes</label>
+            <textarea class="form-textarea" id="editNotes" rows="2"></textarea>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button type="button" class="danger-btn" onclick="deleteCurrentActivity()">Delete</button>
+            <button type="submit" class="primary-btn">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">Saved!</div>
+  </div>
+
+  <script>
+    // ---------- DATE HELPERS ----------
+    function toISODate(d) {
+      const yr = d.getFullYear();
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const dy = String(d.getDate()).padStart(2, '0');
+      return `${yr}-${mo}-${dy}`;
+    }
+
+    function addDays(dateStr, days) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + days);
+      return toISODate(dt);
+    }
+
+    function getMondayOfWeek(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      const day = dt.getDay(); // 0=Sun..6=Sat
+      const diff = day === 0 ? -6 : 1 - day;
+      dt.setDate(dt.getDate() + diff);
+      return toISODate(dt);
+    }
+
+    function formatShortDate(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function formatTime12(hhmm) {
+      if (!hhmm) return '';
+      const [h, m] = hhmm.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h % 12 || 12;
+      return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    }
+
+    function getDurationHours(start, end) {
+      if (!start || !end) return 1;
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      const mins = (eh * 60 + em) - (sh * 60 + sm);
+      return mins > 0 ? +(mins / 60).toFixed(2) : 0.5;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ---------- APP STATE & SAMPLE DATA ----------
+    const TODAY = toISODate(new Date());
+    const THIS_MONDAY = getMondayOfWeek(TODAY);
+    const STORAGE_KEY = 'balance_student_app_v1';
+
+    const SUBCATEGORIES = {
+      Academic: ['Assignment', 'Study session', 'Lecture', 'Exam / Quiz'],
+      Social: ['Friends', 'Club / Campus', 'Social activity'],
+      Personal: ['Rest', 'Gym / Walk', 'Family / Self-care']
+    };
+
+    function createSampleData() {
+      const mon = THIS_MONDAY;
+      const tue = addDays(mon, 1);
+      const wed = addDays(mon, 2);
+      const thu = addDays(mon, 3);
+      const fri = addDays(mon, 4);
+      const sat = addDays(mon, 5);
+      const sun = addDays(mon, 6);
+
+      // Ensure TODAY always feels populated & alive regardless of weekday
+      const tomorrow = addDays(TODAY, 1);
+      const inTwoDays = addDays(TODAY, 2);
+
+      const items = [
+        {
+          id: 'a1',
+          name: 'Attend university lecture',
+          type: 'Academic',
+          category: 'Lecture',
+          date: TODAY,
+          startTime: '09:30',
+          endTime: '11:00',
+          priority: 'Medium',
+          notes: 'Cognitive Psychology — Hall B',
+          reminder: true,
+          reminderTime: '15 minutes before',
+          completed: true,
+          isDeadline: false
+        },
+        {
+          id: 'a2',
+          name: 'Study for Statistics quiz',
+          type: 'Academic',
+          category: 'Study session',
+          date: TODAY,
+          startTime: '13:30',
+          endTime: '15:00',
+          priority: 'High',
+          notes: 'Review probability distributions & 5 practice problems',
+          reminder: true,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        },
+        {
+          id: 'a3',
+          name: 'Finish English assignment',
+          type: 'Academic',
+          category: 'Assignment',
+          date: tomorrow,
+          startTime: '11:00',
+          endTime: '12:30',
+          priority: 'High',
+          notes: 'Draft conclusion paragraph & proofread citations',
+          reminder: true,
+          reminderTime: '1 day before',
+          completed: false,
+          isDeadline: true
+        },
+        {
+          id: 'a4',
+          name: 'Coffee with friends',
+          type: 'Social',
+          category: 'Friends',
+          date: TODAY,
+          startTime: '16:30',
+          endTime: '17:45',
+          priority: 'Medium',
+          notes: 'Campus cafe near the library',
+          reminder: true,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        },
+        {
+          id: 'a5',
+          name: 'Gym or evening walk',
+          type: 'Personal',
+          category: 'Gym / Walk',
+          date: TODAY,
+          startTime: '18:30',
+          endTime: '19:30',
+          priority: 'Low',
+          notes: 'Podcast + light stretching',
+          reminder: false,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        },
+        {
+          id: 'a6',
+          name: 'Statistics Quiz',
+          type: 'Academic',
+          category: 'Exam / Quiz',
+          date: inTwoDays,
+          startTime: '10:00',
+          endTime: '11:00',
+          priority: 'High',
+          notes: 'Chapters 4–6, bring calculator',
+          reminder: true,
+          reminderTime: '1 hour before',
+          completed: false,
+          isDeadline: true
+        },
+        {
+          id: 'a7',
+          name: 'Research methods seminar',
+          type: 'Academic',
+          category: 'Lecture',
+          date: mon === TODAY ? tue : mon,
+          startTime: '10:00',
+          endTime: '12:00',
+          priority: 'Medium',
+          notes: 'Group discussion prep',
+          reminder: false,
+          reminderTime: '30 minutes before',
+          completed: mon < TODAY,
+          isDeadline: false
+        },
+        {
+          id: 'a8',
+          name: 'Lab report outline',
+          type: 'Academic',
+          category: 'Assignment',
+          date: fri === TODAY ? sat : fri,
+          startTime: '14:00',
+          endTime: '16:00',
+          priority: 'Medium',
+          notes: 'Break into intro + methods first',
+          reminder: true,
+          reminderTime: '1 hour before',
+          completed: false,
+          isDeadline: true
+        },
+        {
+          id: 'a9',
+          name: 'Campus board game night',
+          type: 'Social',
+          category: 'Club / Campus',
+          date: fri,
+          startTime: '19:00',
+          endTime: '21:00',
+          priority: 'Low',
+          notes: 'Student union lounge',
+          reminder: true,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        },
+        {
+          id: 'a10',
+          name: 'Family dinner',
+          type: 'Personal',
+          category: 'Family / Self-care',
+          date: sun,
+          startTime: '18:00',
+          endTime: '20:00',
+          priority: 'Medium',
+          notes: 'Unplug from laptop for the evening',
+          reminder: false,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        },
+        {
+          id: 'a11',
+          name: 'Quiet reading & recharge',
+          type: 'Personal',
+          category: 'Rest',
+          date: sat,
+          startTime: '10:30',
+          endTime: '12:00',
+          priority: 'Low',
+          notes: 'Slow morning coffee, no study guilt',
+          reminder: false,
+          reminderTime: '30 minutes before',
+          completed: false,
+          isDeadline: false
+        }
+      ];
+
+      // Intentionally keep Thursday lighter if Thursday isn't today, so insights can spot free time!
+      return {
+        activities: items,
+        profile: {
+          name: 'Maya Lin',
+          major: 'Psychology & Data Science · Year 2',
+          goals: { Academic: 18, Social: 6, Personal: 8 },
+          settings: {
+            notifDeadlines: true,
+            notifBreaks: true,
+            notifNoGuilt: true
+          }
+        }
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const initial = createSampleData();
+      saveState(initial);
+      return initial;
+    }
+
+    function saveState(nextState = state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      } catch (e) {}
+    }
+
+    let state = loadState();
+    let currentTab = 'home';
+    let planView = 'day'; // 'day' | 'week'
+    let planFilter = 'All';
+    let weekOffset = 0;
+    let selectedDate = TODAY;
+    let addType = 'Academic';
+    let addPriority = 'Medium';
+
+    // ---------- NAVIGATION & UI HELPERS ----------
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${tab}`).classList.add('active');
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+
+      document.getElementById('appContent').scrollTop = 0;
+
+      if (tab === 'home') renderHome();
+      if (tab === 'plan') renderPlanner();
+      if (tab === 'add') prepareAddForm();
+      if (tab === 'insights') renderInsights();
+      if (tab === 'profile') renderProfile();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    function openQuickAdd(type) {
+      addType = type;
+      switchTab('add');
+      selectAddType(type);
+    }
+
+    // ---------- SVG DONUT CHART ----------
+    function renderDonut(svgEl, acadH, socH, persH) {
+      const total = acadH + socH + persH;
+      const r = 36;
+      const c = 2 * Math.PI * r;
+      if (total <= 0) {
+        svgEl.innerHTML = `<circle cx="46" cy="46" r="${r}" fill="none" stroke="#e9e2f6" stroke-width="11"/>`;
+        return;
+      }
+
+      const segs = [
+        { val: acadH, color: '#8b6ce8' },
+        { val: socH, color: '#e87a9e' },
+        { val: persH, color: '#c89666' }
+      ];
+
+      let offset = 0;
+      let circles = `<circle cx="46" cy="46" r="${r}" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="11"/>`;
+      segs.forEach(s => {
+        if (s.val <= 0) return;
+        const len = (s.val / total) * c;
+        circles += `<circle cx="46" cy="46" r="${r}" fill="none" stroke="${s.color}" stroke-width="11"
+          stroke-dasharray="${len.toFixed(2)} ${(c - len).toFixed(2)}"
+          stroke-dashoffset="${(-offset).toFixed(2)}"
+          stroke-linecap="round"
+          transform="rotate(-90 46 46)"/>`;
+        offset += len;
+      });
+      svgEl.innerHTML = circles;
+    }
+
+    // ---------- ACTIVITY CARD COMPONENT ----------
+    function activityCardHTML(item, showDate = false) {
+      const isDeadline = item.isDeadline || item.category === 'Assignment' || item.category === 'Exam / Quiz';
+      const dateLabel = showDate ? `<span>• ${formatShortDate(item.date)}</span>` : '';
+      return `
+        <div class="activity-card ${item.completed ? 'completed' : ''}" data-type="${escapeHtml(item.type)}" onclick="openEditModal('${item.id}')">
+          <button class="check-btn" onclick="event.stopPropagation(); toggleComplete('${item.id}')" aria-label="Mark completed">
+            ${item.completed ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+          </button>
+          <div class="act-body">
+            <div class="act-top">
+              <h3 class="act-title">${escapeHtml(item.name)}</h3>
+              <span class="prio-pill prio-${escapeHtml(item.priority)}">${escapeHtml(item.priority)}</span>
+            </div>
+            <div class="act-meta">
+              <span class="badge badge-${escapeHtml(item.type)}">${escapeHtml(item.category || item.type)}</span>
+              <span>${formatTime12(item.startTime)} – ${formatTime12(item.endTime)}</span>
+              ${dateLabel}
+              ${isDeadline ? '<span>📌 Deadline</span>' : ''}
+            </div>
+            ${item.notes ? `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:5px;">${escapeHtml(item.notes)}</div>` : ''}
+          </div>
+          <div class="act-actions">
+            <button class="mini-icon-btn" onclick="event.stopPropagation(); openEditModal('${item.id}')">Move</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleComplete(id) {
+      const item = state.activities.find(a => a.id === id);
+      if (!item) return;
+      item.completed = !item.completed;
+      saveState();
+      if (item.completed) {
+        showToast('Nice job! Progress over perfection ✨');
+      }
+      renderAllActive();
+    }
+
+    function renderAllActive() {
+      if (currentTab === 'home') renderHome();
+      if (currentTab === 'plan') renderPlanner();
+      if (currentTab === 'insights') renderInsights();
+      if (currentTab === 'profile') renderProfile();
+    }
+
+    // ---------- 1. HOME SCREEN ----------
+    function getWeekActivities(mondayStr) {
+      const sundayStr = addDays(mondayStr, 6);
+      return state.activities.filter(a => a.date >= mondayStr && a.date <= sundayStr);
+    }
+
+    function sumHoursByType(list) {
+      const res = { Academic: 0, Social: 0, Personal: 0 };
+      list.forEach(a => {
+        const h = getDurationHours(a.startTime, a.endTime);
+        if (res[a.type] !== undefined) res[a.type] += h;
+      });
+      return {
+        Academic: +res.Academic.toFixed(1),
+        Social: +res.Social.toFixed(1),
+        Personal: +res.Personal.toFixed(1)
+      };
+    }
+
+    function renderHome() {
+      const hr = new Date().getHours();
+      const firstName = (state.profile.name || 'Student').split(' ')[0];
+      const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greetingTitle').textContent = `${greet}, ${firstName}!`;
+      document.getElementById('todayDateChip').textContent = formatShortDate(TODAY);
+
+      const weekList = getWeekActivities(THIS_MONDAY);
+      const hrs = sumHoursByType(weekList);
+      const total = +(hrs.Academic + hrs.Social + hrs.Personal).toFixed(1);
+
+      document.getElementById('homeTotalHours').textContent = `${total}h`;
+      renderDonut(document.getElementById('homeDonutSvg'), hrs.Academic, hrs.Social, hrs.Personal);
+
+      document.getElementById('homeLegend').innerHTML = `
+        <div class="legend-row">
+          <span class="legend-label"><span class="dot" style="background:var(--acad-accent)"></span>Study & Class</span>
+          <span class="legend-val">${hrs.Academic}h</span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-label"><span class="dot" style="background:var(--soc-accent)"></span>Social Life</span>
+          <span class="legend-val">${hrs.Social}h</span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-label"><span class="dot" style="background:var(--pers-accent)"></span>Personal & Rest</span>
+          <span class="legend-val">${hrs.Personal}h</span>
+        </div>
+      `;
+
+      let msg = 'You have a supportive mix of study and downtime.';
+      if (hrs.Academic > (hrs.Social + hrs.Personal) * 2.2) {
+        msg = 'Study-heavy week — remember to protect some rest time.';
+      } else if (hrs.Social + hrs.Personal >= 4) {
+        msg = 'Great balance! You made room for friends and yourself.';
+      }
+      document.getElementById('homeBalanceMsg').textContent = msg;
+
+      const todayItems = state.activities
+        .filter(a => a.date === TODAY)
+        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+      const todayHrs = sumHoursByType(todayItems);
+      const todayAcad = todayItems.filter(a => a.type === 'Academic');
+      const todayAcadOpen = todayAcad.filter(a => !a.completed).length;
+
+      document.getElementById('statStudyHours').textContent = `${todayHrs.Academic}h`;
+      document.getElementById('statTasksLeft').textContent = `${todayAcadOpen}`;
+      document.getElementById('statPersonalTime').textContent = `${+(todayHrs.Social + todayHrs.Personal).toFixed(1)}h`;
+
+      const acadEl = document.getElementById('homeTodayAcademic');
+      acadEl.innerHTML = todayAcad.length
+        ? todayAcad.map(a => activityCardHTML(a, false)).join('')
+        : `<div class="empty-state">No academic tasks scheduled today. Enjoy the breathing room or add one above.</div>`;
+
+      const deadlines = state.activities
+        .filter(a => !a.completed && a.date >= TODAY && (a.isDeadline || a.category === 'Assignment' || a.category === 'Exam / Quiz' || a.priority === 'High'))
+        .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
+        .slice(0, 4);
+
+      const dlEl = document.getElementById('homeDeadlines');
+      dlEl.innerHTML = deadlines.length
+        ? deadlines.map(a => activityCardHTML(a, true)).join('')
+        : `<div class="empty-state">All upcoming deadlines are handled — nice steady pacing!</div>`;
+
+      const socialPers = state.activities
+        .filter(a => a.date >= TODAY && (a.type === 'Social' || a.type === 'Personal'))
+        .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))
+        .slice(0, 4);
+
+      const spEl = document.getElementById('homeSocialPersonal');
+      spEl.innerHTML = socialPers.length
+        ? socialPers.map(a => activityCardHTML(a, true)).join('')
+        : `<div class="empty-state">Nothing social or restful planned yet — treat yourself to coffee or a walk!</div>`;
+    }
+
+    // ---------- 2. MY PLAN – WEEKLY PLANNER ----------
+    function setPlanView(view) {
+      planView = view;
+      document.getElementById('viewDayBtn').classList.toggle('active', view === 'day');
+      document.getElementById('viewWeekBtn').classList.toggle('active', view === 'week');
+      renderPlanner();
+    }
+
+    function shiftWeek(delta) {
+      weekOffset += delta;
+      const newMon = addDays(THIS_MONDAY, weekOffset * 7);
+      selectedDate = weekOffset === 0 ? TODAY : newMon;
+      renderPlanner();
+    }
+
+    function setPlanFilter(f) {
+      planFilter = f;
+      document.querySelectorAll('#plannerFilters .filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(f) || (f === 'Priority' && btn.textContent.includes('Priority')));
+      });
+      renderPlanner();
+    }
+
+    function selectDay(dateStr) {
+      selectedDate = dateStr;
+      if (planView === 'week') setPlanView('day');
+      else renderPlanner();
+    }
+
+    function applyPlanFilter(list) {
+      if (planFilter === 'All') return list;
+      if (planFilter === 'Priority') return list.filter(a => a.priority === 'High');
+      return list.filter(a => a.type === planFilter);
+    }
+
+    function renderPlanner() {
+      const mon = addDays(THIS_MONDAY, weekOffset * 7);
+      const sun = addDays(mon, 6);
+      const label = weekOffset === 0
+        ? 'This Week'
+        : `${formatShortDate(mon).split(',')[1].trim()} – ${formatShortDate(sun).split(',')[1].trim()}`;
+      document.getElementById('weekRangeLabel').textContent = label;
+
+      // Day Strip
+      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      let stripHtml = '';
+      for (let i = 0; i < 7; i++) {
+        const dStr = addDays(mon, i);
+        const dayNum = Number(dStr.split('-')[2]);
+        const dayActs = state.activities.filter(a => a.date === dStr);
+        const hasAcad = dayActs.some(a => a.type === 'Academic');
+        const hasSoc = dayActs.some(a => a.type === 'Social');
+        const hasPers = dayActs.some(a => a.type === 'Personal');
+
+        stripHtml += `
+          <button class="day-pill ${dStr === TODAY ? 'today' : ''} ${dStr === selectedDate ? 'selected' : ''}" onclick="selectDay('${dStr}')">
+            <span class="d-name">${dayNames[i]}</span>
+            <span class="d-num">${dayNum}</span>
+            <span class="d-dots">
+              ${hasAcad ? '<span class="d-dot" style="background:var(--acad-accent)"></span>' : ''}
+              ${hasSoc ? '<span class="d-dot" style="background:var(--soc-accent)"></span>' : ''}
+              ${hasPers ? '<span class="d-dot" style="background:var(--pers-accent)"></span>' : ''}
+            </span>
+          </button>
+        `;
+      }
+      document.getElementById('plannerDayStrip').innerHTML = stripHtml;
+
+      const container = document.getElementById('plannerListContainer');
+
+      if (planView === 'day') {
+        const dayList = applyPlanFilter(
+          state.activities.filter(a => a.date === selectedDate)
+        ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+        const totalDayHrs = dayList.reduce((acc, a) => acc + getDurationHours(a.startTime, a.endTime), 0);
+
+        let html = `
+          <div class="section-header" style="margin-top:6px;">
+            <h2 class="section-title">${selectedDate === TODAY ? 'Today · ' : ''}${formatShortDate(selectedDate)}</h2>
+            <button class="section-link" onclick="addForDate('${selectedDate}')">+ Add here</button>
+          </div>
+        `;
+
+        if (dayList.length) {
+          html += `<div class="task-list">${dayList.map(a => activityCardHTML(a, false)).join('')}</div>`;
+          if (totalDayHrs <= 4) {
+            html += `<div class="free-time-banner"><span>🌿 Light day (${totalDayHrs.toFixed(1)}h planned) — great window for rest or hobbies.</span></div>`;
+          }
+        } else {
+          html += `
+            <div class="empty-state">
+              Nothing scheduled for ${formatShortDate(selectedDate)} yet.<br>
+              Open days give your week flexibility!
+              <div style="margin-top:10px;">
+                <button class="insight-action" onclick="addForDate('${selectedDate}')">+ Plan something gentle</button>
+              </div>
+            </div>
+          `;
+        }
+        container.innerHTML = html;
+      } else {
+        // Week View
+        let html = '';
+        for (let i = 0; i < 7; i++) {
+          const dStr = addDays(mon, i);
+          const dayList = applyPlanFilter(
+            state.activities.filter(a => a.date === dStr)
+          ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+          html += `
+            <div class="week-day-group">
+              <div class="week-day-head">
+                <span>${dStr === TODAY ? 'Today · ' : ''}${formatShortDate(dStr)}</span>
+                <button class="section-link" onclick="addForDate('${dStr}')">+ Add</button>
+              </div>
+              ${dayList.length
+                ? `<div class="task-list">${dayList.map(a => activityCardHTML(a, false)).join('')}</div>`
+                : `<div style="background:var(--surface); border-radius:12px; padding:10px 12px; font-size:0.78rem; color:var(--text-muted);">Open & flexible day 🌿</div>`
+              }
+            </div>
+          `;
+        }
+        container.innerHTML = html;
+      }
+    }
+
+    function addForDate(dateStr) {
+      switchTab('add');
+      document.getElementById('addDate').value = dateStr;
+    }
+
+    // ---------- 3. ADD ACTIVITY ----------
+    function prepareAddForm() {
+      const dateInput = document.getElementById('addDate');
+      if (!dateInput.value) dateInput.value = selectedDate || TODAY;
+      populateCategories(addType);
+    }
+
+    function selectAddType(type) {
+      addType = type;
+      document.querySelectorAll('#addTypeSelector .type-option').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.val === type);
+      });
+      populateCategories(type);
+    }
+
+    function populateCategories(type) {
+      const sel = document.getElementById('addCategory');
+      sel.innerHTML = SUBCATEGORIES[type].map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function selectAddPrio(prio) {
+      addPriority = prio;
+      document.querySelectorAll('#addPrioSelector .prio-opt').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.val === prio);
+      });
+    }
+
+    function handleAddSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('addName').value.trim();
+      const category = document.getElementById('addCategory').value;
+      const date = document.getElementById('addDate').value;
+      const startTime = document.getElementById('addStart').value;
+      const endTime = document.getElementById('addEnd').value;
+      const notes = document.getElementById('addNotes').value.trim();
+      const reminder = document.getElementById('addReminder').checked;
+      const reminderTime = document.getElementById('addReminderTime').value;
+
+      if (!name) return;
+
+      const newAct = {
+        id: 'act_' + Date.now(),
+        name,
+        type: addType,
+        category,
+        date,
+        startTime,
+        endTime,
+        priority: addPriority,
+        notes,
+        reminder,
+        reminderTime,
+        completed: false,
+        isDeadline: category === 'Assignment' || category === 'Exam / Quiz'
+      };
+
+      state.activities.push(newAct);
+      saveState();
+
+      document.getElementById('addActivityForm').reset();
+      document.getElementById('addDate').value = date;
+      selectAddType('Academic');
+      selectAddPrio('Medium');
+      document.getElementById('addReminder').checked = true;
+      document.getElementById('reminderTimingWrap').style.display = 'block';
+
+      selectedDate = date;
+      showToast('Added to your plan ✨');
+      switchTab('plan');
+    }
+
+    // ---------- EDIT / RESCHEDULE / DELETE MODAL ----------
+    function openEditModal(id) {
+      const item = state.activities.find(a => a.id === id);
+      if (!item) return;
+
+      document.getElementById('editId').value = item.id;
+      document.getElementById('editName').value = item.name;
+      document.getElementById('editType').value = item.type;
+      document.getElementById('editDate').value = item.date;
+      document.getElementById('editStart').value = item.startTime;
+      document.getElementById('editEnd').value = item.endTime;
+      document.getElementById('editPriority').value = item.priority;
+      document.getElementById('editCategory').value = item.category || '';
+      document.getElementById('editNotes').value = item.notes || '';
+
+      // Quick Move Day pills (Next 5 days)
+      let moveHtml = '';
+      for (let i = 0; i < 6; i++) {
+        const dStr = addDays(THIS_MONDAY, i);
+        const lbl = dStr === TODAY ? 'Today' : formatShortDate(dStr).split(',')[0];
+        moveHtml += `<button type="button" class="filter-pill ${dStr === item.date ? 'active' : ''}" onclick="quickMoveActivity('${item.id}', '${dStr}')">${lbl}</button>`;
+      }
+      document.getElementById('quickMoveBtns').innerHTML = moveHtml;
+      document.getElementById('editModal').classList.add('open');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('open');
+    }
+
+    function quickMoveActivity(id, targetDate) {
+      const item = state.activities.find(a => a.id === id);
+      if (!item) return;
+      item.date = targetDate;
+      saveState();
+      closeEditModal();
+      selectedDate = targetDate;
+      showToast(`Moved to ${formatShortDate(targetDate)} 🌿`);
+      renderAllActive();
+    }
+
+    function handleEditSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('editId').value;
+      const item = state.activities.find(a => a.id === id);
+      if (!item) return;
+
+      item.name = document.getElementById('editName').value.trim();
+      item.type = document.getElementById('editType').value;
+      item.date = document.getElementById('editDate').value;
+      item.startTime = document.getElementById('editStart').value;
+      item.endTime = document.getElementById('editEnd').value;
+      item.priority = document.getElementById('editPriority').value;
+      item.category = document.getElementById('editCategory').value.trim() || item.type;
+      item.notes = document.getElementById('editNotes').value.trim();
+
+      saveState();
+      closeEditModal();
+      showToast('Schedule updated ✓');
+      renderAllActive();
+    }
+
+    function deleteCurrentActivity() {
+      const id = document.getElementById('editId').value;
+      state.activities = state.activities.filter(a => a.id !== id);
+      saveState();
+      closeEditModal();
+      showToast('Activity removed');
+      renderAllActive();
+    }
+
+    // ---------- 4 & 5. INSIGHTS & BALANCE OVERVIEW ----------
+    function renderInsights() {
+      const weekList = getWeekActivities(THIS_MONDAY);
+      const hrs = sumHoursByType(weekList);
+      const goals = state.profile.goals;
+      const total = +(hrs.Academic + hrs.Social + hrs.Personal).toFixed(1);
+
+      document.getElementById('insightTotalLabel').textContent = `${total} hrs total`;
+
+      const pct = (val, goal) => Math.min(100, Math.round((val / Math.max(1, goal)) * 100));
+      document.getElementById('insAcadHrs').textContent = `${hrs.Academic}h / ${goals.Academic}h goal`;
+      document.getElementById('insAcadBar').style.width = `${pct(hrs.Academic, goals.Academic)}%`;
+
+      document.getElementById('insSocHrs').textContent = `${hrs.Social}h / ${goals.Social}h goal`;
+      document.getElementById('insSocBar').style.width = `${pct(hrs.Social, goals.Social)}%`;
+
+      document.getElementById('insPersHrs').textContent = `${hrs.Personal}h / ${goals.Personal}h goal`;
+      document.getElementById('insPersBar').style.width = `${pct(hrs.Personal, goals.Personal)}%`;
+
+      // Daily Rhythm Bar Chart
+      const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const dayHours = [];
+      let maxH = 4;
+      for (let i = 0; i < 7; i++) {
+        const dStr = addDays(THIS_MONDAY, i);
+        const h = sumHoursByType(weekList.filter(a => a.date === dStr));
+        const sum = h.Academic + h.Social + h.Personal;
+        if (sum > maxH) maxH = sum;
+        dayHours.push({ ...h, sum, label: dayLabels[i], date: dStr });
+      }
+
+      document.getElementById('weeklyBarsChart').innerHTML = dayHours.map(d => {
+        const hPx = val => Math.round((val / maxH) * 86);
+        return `
+          <div class="w-bar-col">
+            <div class="w-bar-stack" style="height: ${Math.max(6, hPx(d.sum))}px;">
+              <div style="height:${hPx(d.Academic)}px; background:var(--acad-accent);"></div>
+              <div style="height:${hPx(d.Social)}px; background:var(--soc-accent);"></div>
+              <div style="height:${hPx(d.Personal)}px; background:var(--pers-accent);"></div>
+            </div>
+            <span class="w-bar-lbl" style="${d.date === TODAY ? 'color:var(--acad-dark);font-weight:800;' : ''}">${d.label}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Dynamic Supportive Suggestions
+      const suggestions = [];
+      const lightestDay = [...dayHours].sort((a, b) => a.sum - b.sum)[0];
+      const busiestDay = [...dayHours].sort((a, b) => b.sum - a.sum)[0];
+      const highAcadCount = weekList.filter(a => a.type === 'Academic' && a.priority === 'High' && !a.completed).length;
+
+      if (hrs.Academic >= goals.Academic * 0.75 && hrs.Personal < goals.Personal * 0.5) {
+        suggestions.push({
+          icon: '💜',
+          bg: 'var(--acad-bg)',
+          text: `You have scheduled ${hrs.Academic}h of study time this week. Remember to make time for yourself too.`,
+          btnLabel: '+ Schedule a 30m break',
+          action: "openQuickAdd('Personal')"
+        });
+      }
+
+      if (lightestDay && lightestDay.sum <= 2.5) {
+        const dayFull = formatShortDate(lightestDay.date).split(',')[0];
+        suggestions.push({
+          icon: '🌿',
+          bg: 'var(--sage-bg)',
+          text: `You have plenty of free time on ${dayFull}. It's a great spot to rest or move a heavy task there.`,
+          btnLabel: `View ${dayFull}`,
+          action: `selectedDate='${lightestDay.date}'; setPlanView('day'); switchTab('plan');`
+        });
+      }
+
+      if (highAcadCount >= 2) {
+        suggestions.push({
+          icon: '✨',
+          bg: 'var(--soc-bg)',
+          text: `You have a busy academic stretch (${highAcadCount} high-priority items). Try breaking your assignment into smaller 30-minute tasks.`,
+          btnLabel: 'Organize in My Plan',
+          action: "setPlanFilter('Priority'); switchTab('plan');"
+        });
+      }
+
+      if (busiestDay && busiestDay.sum >= 5 && lightestDay && busiestDay.date !== lightestDay.date) {
+        const busyName = formatShortDate(busiestDay.date).split(',')[0];
+        const lightName = formatShortDate(lightestDay.date).split(',')[0];
+        suggestions.push({
+          icon: '🪴',
+          bg: 'var(--pers-bg)',
+          text: `${busyName} looks packed (${busiestDay.sum.toFixed(1)}h). Consider moving one task to ${lightName} to keep your pace realistic.`,
+          btnLabel: `Open ${busyName}`,
+          action: `selectedDate='${busiestDay.date}'; setPlanView('day'); switchTab('plan');`
+        });
+      }
+
+      if (hrs.Social < 2) {
+        suggestions.push({
+          icon: '☕',
+          bg: 'var(--soc-bg)',
+          text: `Social connection helps lower study stress. Want to invite a friend for coffee or lunch this week?`,
+          btnLabel: '+ Add Social Time',
+          action: "openQuickAdd('Social')"
+        });
+      }
+
+      document.getElementById('insightsList').innerHTML = suggestions.map(s => `
+        <div class="insight-card">
+          <div class="insight-icon" style="background:${s.bg};">${s.icon}</div>
+          <div class="insight-text">
+            <div>${escapeHtml(s.text)}</div>
+            <button class="insight-action" onclick="${s.action}">${escapeHtml(s.btnLabel)}</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Priority List
+      const prioOrder = { High: 0, Medium: 1, Low: 2 };
+      const topTasks = state.activities
+        .filter(a => !a.completed && a.date >= TODAY)
+        .sort((a, b) => prioOrder[a.priority] - prioOrder[b.priority] || a.date.localeCompare(b.date))
+        .slice(0, 4);
+
+      document.getElementById('insightsPriorityList').innerHTML = topTasks.length
+        ? topTasks.map(a => activityCardHTML(a, true)).join('')
+        : `<div class="empty-state">No pending tasks — you're all caught up!</div>`;
+    }
+
+    // ---------- 6. PROFILE & SETTINGS ----------
+    function renderProfile() {
+      const p = state.profile;
+      document.getElementById('profileDisplayName').textContent = p.name;
+      document.getElementById('profileAvatar').textContent = (p.name || 'M')[0].toUpperCase();
+      document.getElementById('profileMajor').textContent = p.major;
+      document.getElementById('profNameInput').value = p.name;
+
+      document.getElementById('winsCount').textContent = state.activities.filter(a => a.completed).length;
+
+      document.getElementById('goalAcadRange').value = p.goals.Academic;
+      document.getElementById('goalAcadVal').textContent = `${p.goals.Academic}h/wk`;
+      document.getElementById('goalSocRange').value = p.goals.Social;
+      document.getElementById('goalSocVal').textContent = `${p.goals.Social}h/wk`;
+      document.getElementById('goalPersRange').value = p.goals.Personal;
+      document.getElementById('goalPersVal').textContent = `${p.goals.Personal}h/wk`;
+
+      document.getElementById('notifDeadlines').checked = p.settings.notifDeadlines;
+      document.getElementById('notifBreaks').checked = p.settings.notifBreaks;
+      document.getElementById('notifNoGuilt').checked = p.settings.notifNoGuilt;
+    }
+
+    function updateProfileField(field, val) {
+      if (!val.trim()) return;
+      state.profile[field] = val.trim();
+      saveState();
+      renderProfile();
+      showToast('Profile updated');
+    }
+
+    function updateGoal(type, val) {
+      state.profile.goals[type] = Number(val);
+      saveState();
+      renderProfile();
+    }
+
+    function toggleSetting(key, checked) {
+      state.profile.settings[key] = checked;
+      saveState();
+      showToast('Preference saved');
+    }
+
+    function resetDemoData() {
+      state = createSampleData();
+      saveState();
+      selectedDate = TODAY;
+      weekOffset = 0;
+      showToast('Sample student week restored ✨');
+      switchTab('home');
+    }
+
+    // ---------- INIT ----------
+    renderHome();
+  </script>
+</body>
+</html>
